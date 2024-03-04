@@ -1,49 +1,56 @@
 package studytracker;
 
-import java.util.Observer;
-import  javax.swing.*;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
 
-public class STView implements Observer{
-    private static final Dimension PANEL_SIZE = new Dimension(200, 200);
-    private final STModel model;
-    private final STController controller;
-    private JFrame frame;
-    private JPanel panel;
+public class STView extends JFrame {
+    private JButton startButton = new JButton("Start Timer");
+    private JButton stopButton = new JButton("Stop Timer"); // Text updated for clarity
+    private JLabel timerLabel = new JLabel("00:00:00", SwingConstants.CENTER);
 
-    public STView(STModel model, STController controller){
-        this.model = model;
-        model.addObserver(this);
-        createControls();
-        this.controller = controller;
-        controller.setView(this);
-        update(model, null);
+    public STView() {
+        // Frame setup
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(300, 200);
 
-    }
-    public void createControls(){
-        frame = new JFrame("Study Track App");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Layout
+        this.setLayout(new BorderLayout());
+        JPanel buttonPanel = new JPanel(new FlowLayout()); // Panel to hold buttons
+        buttonPanel.add(startButton);
+        buttonPanel.add(stopButton); // Add the stop button to the panel
+        this.add(buttonPanel, BorderLayout.SOUTH); // Add the panel to the frame
+        this.add(timerLabel, BorderLayout.CENTER);
 
-        Container contentPane = frame.getContentPane();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
-        createPanel();
-        contentPane.add(panel);
+        // Set the window to appear in the center of the screen
+        this.setLocationRelativeTo(null);
 
-        frame.pack();
-        frame.setResizable(false);
-        frame.setVisible(true);
+        this.setVisible(true);
     }
 
-    @Override
-    public void update(java.util.Observable o, Object arg){
-
-    }
-    private void createPanel(){
-        panel = new JPanel();
-        panel.setLayout(new GridLayout(4,2));
-        panel.setPreferredSize(PANEL_SIZE);
+    // Listener for start button
+    public void setStartButtonListener(ActionListener listenForStartButton) {
+        startButton.addActionListener(listenForStartButton);
     }
 
+    // Listener for stop button
+    public void setStopButtonListener(ActionListener listenForStopButton) {
+        stopButton.addActionListener(listenForStopButton);
+    }
 
+    // Method to update the timer display
+    public void updateTimerDisplay(long elapsedTime) {
+        // Assuming elapsedTime is in milliseconds
+        long seconds = (elapsedTime / 1000) % 60;
+        long minutes = (elapsedTime / (1000 * 60)) % 60;
+        long hours = (elapsedTime / (1000 * 60 * 60)) % 24;
+
+        String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        timerLabel.setText(timeString);
+    }
+
+    // Method to reset the timer display
+    public void resetTimerDisplay() {
+        timerLabel.setText("00:00:00");
+    }
 }
